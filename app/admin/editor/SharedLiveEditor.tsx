@@ -118,6 +118,51 @@ export function SharedLiveEditor({
         [pageSlug]
     );
 
+    const syncToChinese = useCallback((newEnData: any, oldZhData: any) => {
+        const translatedKeys = ['title', 'description', 'heading', 'label', 'value', 'ctaText', 'content', 'subtitle', 'name', 'text'];
+
+        const clone = JSON.parse(JSON.stringify(newEnData));
+
+        const mergeBlocks = (enBlocks: any[], zhBlocks: any[]) => {
+            return enBlocks.map(enBlock => {
+                const zhBlock = zhBlocks?.find((b: any) => b.id === enBlock.id);
+                if (!zhBlock) return enBlock;
+
+                const newProps = { ...enBlock.props };
+                for (const key of Object.keys(newProps)) {
+                    if (translatedKeys.includes(key) && zhBlock.props?.[key] !== undefined) {
+                        newProps[key] = zhBlock.props[key];
+                    } else if (Array.isArray(newProps[key]) && Array.isArray(zhBlock.props?.[key])) {
+                        if (newProps[key].length === zhBlock.props[key].length) {
+                            newProps[key] = newProps[key].map((item: any, i: number) => {
+                                const zhItem = zhBlock.props[key][i];
+                                const mergedItem = { ...item };
+                                for (const k of translatedKeys) {
+                                    if (zhItem[k] !== undefined) mergedItem[k] = zhItem[k];
+                                }
+                                return mergedItem;
+                            });
+                        }
+                    }
+                }
+
+                const result = { ...enBlock, props: newProps };
+
+                if (enBlock.zones) {
+                    result.zones = {};
+                    for (const zoneKey of Object.keys(enBlock.zones)) {
+                        result.zones[zoneKey] = mergeBlocks(enBlock.zones[zoneKey], zhBlock.zones?.[zoneKey] || []);
+                    }
+                }
+
+                return result;
+            });
+        };
+
+        clone.content = mergeBlocks(clone.content || [], oldZhData?.content || []);
+        return clone;
+    }, []);
+
     // Debounced autosave
     useEffect(() => {
         const currentData = isZh ? zhData : data;
@@ -206,13 +251,24 @@ export function SharedLiveEditor({
             {/* Puck Editor */}
             <div className="flex-1 overflow-hidden">
                 <Puck
+                    key={isZh ? 'zh' : 'en'}
                     config={config as any}
                     data={isZh ? zhData : data}
                     onChange={(newData) => {
-                        if (isZh) setZhData(newData);
-                        else setData(newData);
+                        if (isZh) {
+                            setZhData(newData);
+                        } else {
+                            setData(newData);
+                            // Auto-sync structure to Chinese data in state
+                            setZhData((prevZh: any) => {
+                                const newZh = syncToChinese(newData, prevZh);
+                                // Queue a background save for the Chinese version so it hits the DB
+                                handleSave(newZh, 'zh');
+                                return newZh;
+                            });
+                        }
                     }}
-                    headerPath={`/en${meta.publicPath}`}
+                    headerPath={`/${isZh ? 'zh' : 'en'}${meta.publicPath}`}
                 />
             </div>
         </div>
