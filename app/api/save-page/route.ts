@@ -111,14 +111,13 @@ export async function POST(request: NextRequest) {
                 .from('layout_content')
                 .upsert({
                     key,
-                    [contentColumn]: newContent,
-                    updated_at: new Date().toISOString()
+                    [contentColumn]: newContent
                 }, { onConflict: 'key' })
                 .select();
 
             if (layoutError) {
-                console.error(`3. SUPABASE LAYOUT UPDATE ERROR for ${key}:`, layoutError);
-                return NextResponse.json({ error: layoutError.message }, { status: 500 });
+                console.error(`3. SUPABASE LAYOUT UPDATE ERROR for ${key}:`, JSON.stringify(layoutError));
+                return NextResponse.json({ error: layoutError.message, hint: layoutError.hint, details: layoutError.details }, { status: 500 });
             }
 
             if (!updatedLayout || updatedLayout.length === 0) {
