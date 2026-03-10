@@ -30,14 +30,14 @@ export function ProductCatalog() {
                 "pa series - fire pump",
                 "paz series",
                 "p-iso series",
-                "split-case ps",
+                "ps series",
                 "pil series",
                 "pv series",
-                "horizontal pm",
-                "submersible cp",
-                "submersible sp",
-                "borehole pbs",
-                "electric motor pem",
+                "pm series",
+                "cp series",
+                "sp series",
+                "pbs series",
+                "pem series",
             ];
 
             const getOrder = (product: any): number => {
