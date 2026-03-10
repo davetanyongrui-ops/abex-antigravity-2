@@ -169,6 +169,26 @@ export function ContactView({ isEditable = false, initialData }: ContactViewProp
                                     </div>
                                 </div>
                             </div>
+
+                            <div className="flex items-start">
+                                <div className="flex-shrink-0 bg-white p-3 border border-slate-200 shadow-sm rounded-lg text-slate-900">
+                                    <Mail className="w-6 h-6" />
+                                </div>
+                                <div className="ml-5">
+                                    <h3 className="text-lg font-bold text-slate-900 uppercase tracking-tight">
+                                        {isEditable ? (
+                                            <InlineText
+                                                as="span"
+                                                content={getLabel('email')}
+                                                className={getClasses('email')}
+                                                onUpdate={(data) => handleUpdate('email', data)}
+                                            />
+                                        ) : (
+                                            <span className={getClasses('email')}>{getLabel('email')}</span>
+                                        )}
+                                    </h3>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
