@@ -82,6 +82,53 @@ export function ClientEditor({ pageId, slug, initialData, initialZhData }: {
         }
     }, [slug, router]);
 
+    const syncToChinese = useCallback((newEnData: any, oldZhData: any) => {
+        const translatedKeys = ['title', 'description', 'heading', 'label', 'value', 'ctaText', 'content', 'subtitle', 'name', 'text'];
+
+        const clone = JSON.parse(JSON.stringify(newEnData));
+
+        const mergeBlocks = (enBlocks: any[], zhBlocks: any[]) => {
+            return enBlocks.map(enBlock => {
+                const zhBlock = zhBlocks?.find((b: any) => b.id === enBlock.id);
+                if (!zhBlock) return enBlock; // new block, keep EN text for now
+
+                const newProps = { ...enBlock.props };
+                for (const key of Object.keys(newProps)) {
+                    if (translatedKeys.includes(key) && zhBlock.props?.[key] !== undefined) {
+                        newProps[key] = zhBlock.props[key];
+                    } else if (Array.isArray(newProps[key]) && Array.isArray(zhBlock.props?.[key])) {
+                        // For arrays (like FeatureGrid items), map text over if lengths match
+                        if (newProps[key].length === zhBlock.props[key].length) {
+                            newProps[key] = newProps[key].map((item: any, i: number) => {
+                                const zhItem = zhBlock.props[key][i];
+                                const mergedItem = { ...item };
+                                for (const k of translatedKeys) {
+                                    if (zhItem[k] !== undefined) mergedItem[k] = zhItem[k];
+                                }
+                                return mergedItem;
+                            });
+                        }
+                    }
+                }
+
+                const result = { ...enBlock, props: newProps };
+
+                // Recurse into zones
+                if (enBlock.zones) {
+                    result.zones = {};
+                    for (const zoneKey of Object.keys(enBlock.zones)) {
+                        result.zones[zoneKey] = mergeBlocks(enBlock.zones[zoneKey], zhBlock.zones?.[zoneKey] || []);
+                    }
+                }
+
+                return result;
+            });
+        };
+
+        clone.content = mergeBlocks(clone.content || [], oldZhData?.content || []);
+        return clone;
+    }, []);
+
     // Autosave Effect
     useEffect(() => {
         const currentData = isZh ? zhData : data;
@@ -145,11 +192,23 @@ export function ClientEditor({ pageId, slug, initialData, initialZhData }: {
             </div>
             <div className="flex-1 overflow-hidden">
                 <Puck
+                    key={isZh ? 'zh' : 'en'}
                     config={config}
                     data={isZh ? zhData : data}
                     onChange={(newData) => {
-                        if (isZh) setZhData(newData);
-                        else setData(newData);
+                        if (isZh) {
+                            setZhData(newData);
+                        } else {
+                            setData(newData);
+                            // Auto-sync structure to Chinese data in state
+                            setZhData((prevZh: any) => {
+                                const newZh = syncToChinese(newData, prevZh);
+                                // Queue a background save for the Chinese version so it hits the DB
+                                // even if the user never clicks the Chinese toggle
+                                handleSave(newZh, 'zh');
+                                return newZh;
+                            });
+                        }
                     }}
                     headerPath="/admin/pages"
                 />
