@@ -30,7 +30,7 @@ export function ProductCatalog() {
                 "pa series - fire pump",
                 "paz series",
                 "p-iso series",
-                "split case ps",
+                "split-case ps",
                 "pil series",
                 "pv series",
                 "horizontal pm",
