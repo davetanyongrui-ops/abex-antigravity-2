@@ -154,10 +154,10 @@ export function Header() {
                     </nav>
 
                     {/* Right: Actions */}
-                    <div className="flex items-center space-x-8">
+                    <div className="flex items-center gap-3">
 
-                        {/* Language switcher */}
-                        <div className="hidden md:flex items-center gap-1 text-[11px] font-extrabold tracking-widest transition-colors duration-300 font-sans text-slate-400">
+                        {/* Language switcher — always visible */}
+                        <div className="flex items-center gap-1 text-[11px] font-extrabold tracking-widest transition-colors duration-300 font-sans text-slate-400">
                             <button
                                 onClick={() => router.replace(pathname, { locale: 'en' })}
                                 className={cn(
@@ -195,54 +195,54 @@ export function Header() {
             {/* Mobile Navigation Menu Overlay */}
             {isMobileMenuOpen && (
                 <div className="fixed inset-0 z-[60] lg:hidden">
-                    <div className="absolute inset-0 bg-slate-900/40" onClick={() => setIsMobileMenuOpen(false)} />
+                    <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
                     <div className="absolute right-0 top-0 h-full w-[85%] max-w-sm bg-white shadow-2xl flex flex-col">
-                        <div className="p-8 flex justify-between items-center border-b border-slate-100">
+
+                        {/* Menu Header */}
+                        <div className="px-6 py-5 flex justify-between items-center border-b border-slate-100">
                             <Image
                                 src="/abex-logo.png"
                                 alt="ABEX Logo"
-                                width={180}
-                                height={90}
-                                className="h-16 w-auto object-contain"
+                                width={140}
+                                height={70}
+                                className="h-12 w-auto object-contain"
                             />
-                            <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)} className="h-12 w-12 text-slate-800">
-                                <X className="w-8 h-8" />
+                            <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)} className="h-10 w-10 text-slate-600 hover:bg-slate-100">
+                                <X className="w-6 h-6" />
                             </Button>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto py-12 px-8">
-                            <nav className="flex flex-col space-y-6">
+                        {/* Nav Links */}
+                        <div className="flex-1 overflow-y-auto py-6 px-6">
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4">Navigation</p>
+                            <nav className="flex flex-col">
                                 {navLinks.map((link, idx) => (
                                     <Link
                                         key={`mobile-${link.href}-${idx}`}
                                         href={link.href}
                                         onClick={() => setIsMobileMenuOpen(false)}
                                         className={cn(
-                                            "text-2xl font-extrabold tracking-tight transition-all font-heading",
-                                            pathname === link.href ? "text-primary translate-x-3" : "text-slate-800 hover:text-primary"
+                                            "flex items-center justify-between py-4 border-b border-slate-100 text-[22px] font-bold tracking-tight transition-all font-heading group",
+                                            pathname === link.href
+                                                ? "text-[#FF7E1A]"
+                                                : "text-slate-800 hover:text-[#FF7E1A]"
                                         )}
                                     >
-                                        {link.label}
+                                        <span>{link.label}</span>
+                                        <span className={cn(
+                                            "text-slate-300 group-hover:text-[#FF7E1A] transition-colors text-lg",
+                                            pathname === link.href && "text-[#FF7E1A]"
+                                        )}>›</span>
                                     </Link>
                                 ))}
                             </nav>
                         </div>
 
-                        <div className="p-10 border-t border-slate-100 bg-slate-50">
-                            <div className="flex items-center gap-4 text-sm font-bold text-slate-400">
-                                <button
-                                    onClick={() => { router.replace(pathname, { locale: 'en' }); setIsMobileMenuOpen(false); }}
-                                    className={cn("px-4 py-2 rounded-md transition-all", locale === 'en' ? "bg-primary text-white" : "hover:text-slate-900")}
-                                >
-                                    English
-                                </button>
-                                <button
-                                    onClick={() => { router.replace(pathname, { locale: 'zh' }); setIsMobileMenuOpen(false); }}
-                                    className={cn("px-4 py-2 rounded-md transition-all", locale === 'zh' ? "bg-primary text-white" : "hover:text-slate-900")}
-                                >
-                                    中文
-                                </button>
-                            </div>
+                        {/* Menu Footer */}
+                        <div className="px-6 py-5 border-t border-slate-100 bg-slate-50">
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-3">Contact</p>
+                            <p className="text-sm text-slate-500 font-sans">sales@abex-engrg.com</p>
+                            <p className="text-sm text-slate-500 font-sans">+65 6841 2818</p>
                         </div>
                     </div>
                 </div>
