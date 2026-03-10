@@ -129,7 +129,8 @@ export default function AdminProductsPage() {
                 slug: generatedSlug,
                 image_url: finalImageUrl,
                 certifications: formData.certifications,
-                specs_json: { ...formData.specs_json, description: formData.description }
+                specs_json: { ...formData.specs_json, description: formData.description },
+                price_sgd: 0 // Default price to satisfy database constraint
             };
 
             if (editingId) {
