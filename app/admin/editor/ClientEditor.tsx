@@ -71,7 +71,12 @@ export function ClientEditor({ pageId, slug, initialData, initialZhData }: {
 
             // Background revalidation happens on server
         } catch (error: any) {
-            console.error("Autosave error:", error);
+            console.error("Autosave error (full):", {
+                message: error.message,
+                slug,
+                isZh: isZh ?? false,
+                dataKeys: Object.keys(currentData || {})
+            });
             setSaveStatus('error');
             toast.error(`Autosave failed: ${error.message}`);
         }
