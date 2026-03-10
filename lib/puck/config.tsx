@@ -643,7 +643,7 @@ export const config: Config<Props> = {
                                             }}
                                             transition={{ duration: 0.7, ease: "easeOut" }}
                                         >
-                                            <div className="h-24 w-full relative mb-8 grayscale group-hover:grayscale-0 transition-all duration-500 flex items-center justify-center p-4 bg-slate-100 rounded-lg">
+                                            <div className="h-24 w-full relative mb-8 transition-all duration-500 flex items-center justify-center p-4 bg-slate-100 rounded-lg">
                                                 {brand.logo && (brand.logo.startsWith('http') || brand.logo.startsWith('/')) ? (
                                                     <img
                                                         src={brand.logo}
