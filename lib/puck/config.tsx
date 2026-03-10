@@ -59,6 +59,8 @@ type Props = {
         backgroundColor?: string;
         textSize?: "small" | "medium" | "large";
         fontFamily?: "sans" | "serif" | "mono";
+        imageFit?: "cover" | "contain";
+        imageScale?: number;
     };
     StatsGrid: {
         stats: { label: string; value: string }[];
@@ -496,8 +498,27 @@ export const config: Config<Props> = {
                         { label: "Mono", value: "mono" },
                     ],
                 },
+                imageFit: {
+                    type: "radio",
+                    options: [
+                        { label: "Cover", value: "cover" },
+                        { label: "Contain", value: "contain" },
+                    ],
+                },
+                imageScale: {
+                    type: "number",
+                },
             },
-            render: ({ label, title, description, image, reverse, theme, ctaText, ctaHref, textColor, backgroundColor, textSize, fontFamily, puck }) => (
+            defaultProps: {
+                title: "Section Title",
+                description: "Section description goes here.",
+                image: "https://images.unsplash.com/photo-1558444479-c84825d2ea9d?q=80&w=2000",
+                reverse: false,
+                theme: "light",
+                imageFit: "cover",
+                imageScale: 1,
+            },
+            render: ({ label, title, description, image, reverse, theme, ctaText, ctaHref, textColor, backgroundColor, textSize, fontFamily, imageFit, imageScale, puck }) => (
                 <section
                     className={`py-24 ${fontFamily === 'serif' ? 'font-serif' : fontFamily === 'mono' ? 'font-mono' : 'font-sans'}`}
                     style={{
@@ -543,7 +564,8 @@ export const config: Config<Props> = {
                                         <img
                                             src={image}
                                             alt={typeof title === 'string' ? title : "Image"}
-                                            className="w-full h-full object-cover transform transition-transform duration-[1500ms] group-hover:scale-105"
+                                            className={`w-full h-full ${imageFit === 'contain' ? 'object-contain' : 'object-cover'} transform transition-transform duration-[1500ms] group-hover:scale-105`}
+                                            style={{ transform: `scale(${imageScale || 1})` }}
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs font-sans">
@@ -658,7 +680,7 @@ export const config: Config<Props> = {
                                                         alt={typeof brand.name === 'string' ? brand.name : "Brand"}
                                                         className="max-h-full max-w-full object-contain"
                                                         style={{
-                                                            transform: `scale(${(brand.scale || 1) * (brand.name?.toLowerCase().includes('weinman') ? 0.4 : brand.name?.toLowerCase().includes('paragon') ? 1.4 : 1)})`
+                                                            transform: `scale(${(brand.scale || 1) * (String(brand.name || '').toLowerCase().includes('weinman') ? 1.2 : String(brand.name || '').toLowerCase().includes('paragon') ? 1.4 : 1)})`
                                                         }}
                                                     />
                                                 ) : (
