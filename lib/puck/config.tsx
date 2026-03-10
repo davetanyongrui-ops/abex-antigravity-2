@@ -66,7 +66,7 @@ type Props = {
     BrandsGrid: {
         title: string;
         description: string;
-        brands: { name: string; logo: string; description: string }[];
+        brands: { name: string; logo: string; scale?: number; description: string }[];
     };
     ShortCTA: {
         title: string;
@@ -74,6 +74,7 @@ type Props = {
         ctaText: string;
         ctaHref: string;
         bgImage: string;
+        bgSize?: "cover" | "contain";
     };
     CompanyCertifications: {};
 };
@@ -537,7 +538,7 @@ export const config: Config<Props> = {
                             </div>
                             <div className={`relative ${reverse ? 'lg:order-1' : ''} group px-4 w-full max-w-2xl mx-auto`}>
                                 <div className="absolute inset-0 bg-blue-600/5 -rotate-3 scale-105 rounded-2xl -z-10 group-hover:rotate-0 transition-transform duration-500" />
-                                <div className="aspect-video lg:aspect-[3/4] overflow-hidden rounded-2xl shadow-xl border border-slate-100 bg-slate-200">
+                                <div className="aspect-square lg:aspect-[3/4] overflow-hidden rounded-2xl shadow-xl border border-slate-100 bg-slate-200">
                                     {image && (image.startsWith('http') || image.startsWith('/')) ? (
                                         <img
                                             src={image}
@@ -597,6 +598,13 @@ export const config: Config<Props> = {
                     arrayFields: {
                         name: { type: "text", contentEditable: true },
                         logo: { type: "text" },
+                        scale: {
+                            type: "number",
+                            label: "Logo Scale (0.1 to 2)",
+                            min: 0.1,
+                            max: 2,
+                            step: 0.1,
+                        },
                         description: { type: "textarea", contentEditable: true },
                     },
                     getItemSummary: (item) => item.name || "Brand",
@@ -649,6 +657,9 @@ export const config: Config<Props> = {
                                                         src={brand.logo}
                                                         alt={typeof brand.name === 'string' ? brand.name : "Brand"}
                                                         className="max-h-full max-w-full object-contain"
+                                                        style={{
+                                                            transform: `scale(${(brand.scale || 1) * (brand.name?.toLowerCase().includes('weinman') ? 0.4 : brand.name?.toLowerCase().includes('paragon') ? 1.4 : 1)})`
+                                                        }}
                                                     />
                                                 ) : (
                                                     <div className="text-[10px] text-slate-400">
@@ -678,12 +689,27 @@ export const config: Config<Props> = {
                 ctaText: { type: "text", contentEditable: true },
                 ctaHref: { type: "text" },
                 bgImage: { type: "text" },
+                bgSize: {
+                    type: "radio",
+                    options: [
+                        { label: "Cover", value: "cover" },
+                        { label: "Contain", value: "contain" },
+                    ],
+                },
             },
-            render: ({ title, subtitle, ctaText, ctaHref, bgImage, puck }) => (
+            defaultProps: {
+                title: "ABEX Engineering",
+                subtitle: "Reliable Water Pump Solutions for Every Industry.",
+                ctaText: "Contact Us Today",
+                ctaHref: "/contact",
+                bgImage: "/images/pump-pic1.jpeg",
+                bgSize: "cover",
+            },
+            render: ({ title, subtitle, ctaText, ctaHref, bgImage, bgSize, puck }) => (
                 <section className="relative py-32 overflow-hidden">
                     {bgImage ? (
                         <div className="absolute inset-0 z-0">
-                            <img src={bgImage} className="w-full h-full object-cover" alt="" />
+                            <img src={bgImage} className={`w-full h-full ${bgSize === 'contain' ? 'object-contain' : 'object-cover'}`} alt="" />
                             <div className="absolute inset-0 bg-slate-900/80" />
                         </div>
                     ) : (
