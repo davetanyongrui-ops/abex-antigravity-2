@@ -680,7 +680,7 @@ export const config: Config<Props> = {
                                                         alt={typeof brand.name === 'string' ? brand.name : "Brand"}
                                                         className="max-h-full max-w-full object-contain"
                                                         style={{
-                                                            transform: `scale(${(brand.scale || 1) * (String(brand.name || '').toLowerCase().includes('weinman') ? 1.28 : String(brand.name || '').toLowerCase().includes('paragon') ? 1.4 : 1)})`
+                                                            transform: `scale(${(brand.scale || 1) * (String(brand.name || '').toLowerCase().includes('weinman') ? 1.15 : String(brand.name || '').toLowerCase().includes('paragon') ? 1.4 : 1)})`
                                                         }}
                                                     />
                                                 ) : (
