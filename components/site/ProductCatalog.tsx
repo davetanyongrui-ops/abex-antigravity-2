@@ -25,28 +25,41 @@ export function ProductCatalog() {
                 .select('*')
                 .order('created_at', { ascending: false });
 
-            const sortedData = (data || []).sort((a: any, b: any) => {
-                const nameA = (a.name || "").toLowerCase();
-                const nameB = (b.name || "").toLowerCase();
-                const brandA = (a.specs_json?.brand || "").toLowerCase();
-                const brandB = (b.specs_json?.brand || "").toLowerCase();
+            const ORDER: string[] = [
+                "pa series",
+                "pa series - fire pump",
+                "paz series",
+                "p-iso series",
+                "split case ps",
+                "pil series",
+                "pv series",
+                "horizontal pm",
+                "submersible cp",
+                "submersible sp",
+                "borehole pbs",
+                "electric motor pem",
+            ];
 
-                const isParagonA = nameA.includes("paragon") || brandA.includes("paragon");
-                const isParagonB = nameB.includes("paragon") || brandB.includes("paragon");
-                const isWeinmanA = nameA.includes("weinman") || brandA.includes("weinman");
-                const isWeinmanB = nameB.includes("weinman") || brandB.includes("weinman");
+            const getOrder = (product: any): number => {
+                const name = (product.name || "").toLowerCase();
+                const brand = (product.specs_json?.brand || "").toLowerCase();
+                const isWeinman = name.includes("weinman") || brand.includes("weinman");
+                if (isWeinman) return ORDER.length + 1; // Weinman always last
 
-                // Paragon comes first (Tier 1)
-                if (isParagonA && !isParagonB) return -1;
-                if (!isParagonA && isParagonB) return 1;
+                // Find the most specific (longest) matching key to avoid "pa series"
+                // swallowing "pa series - fire pump"
+                const bestIdx = ORDER.reduce((best, key, i) => {
+                    if (name.includes(key)) {
+                        if (best === -1 || key.length > ORDER[best].length) return i;
+                    }
+                    return best;
+                }, -1);
 
-                // Weinman comes last (Tier 3)
-                if (isWeinmanA && !isWeinmanB) return 1;
-                if (!isWeinmanA && isWeinmanB) return -1;
+                return bestIdx === -1 ? ORDER.length : bestIdx;
+            };
 
-                // Others in Tier 2 (maintain created_at order implicitly)
-                return 0;
-            });
+            const sortedData = (data || []).sort((a: any, b: any) => getOrder(a) - getOrder(b));
+
 
             setProducts(sortedData);
             setIsLoading(false);
