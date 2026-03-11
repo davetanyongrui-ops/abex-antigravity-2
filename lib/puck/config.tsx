@@ -678,7 +678,7 @@ export const config: Config<Props> = {
                                                     <img
                                                         src={brand.logo}
                                                         alt={typeof brand.name === 'string' ? brand.name : "Brand"}
-                                                        className={`object-contain ${String(brand.name || '').toLowerCase().includes('weinman') ? 'h-10 w-auto' : String(brand.name || '').toLowerCase().includes('paragon') ? 'h-16 w-auto scale-110' : 'max-h-full max-w-full'}`}
+                                                        className={`object-contain ${String(brand.name || '').toLowerCase().includes('weinman') ? 'h-8 w-auto' : String(brand.name || '').toLowerCase().includes('paragon') ? 'h-16 w-auto scale-110' : 'max-h-full max-w-full'}`}
                                                     />
                                                 ) : (
                                                     <div className="text-[10px] text-slate-400">
